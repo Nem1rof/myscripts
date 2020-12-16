@@ -1,0 +1,25 @@
+{
+#:log info "IPSec Watchdog Started"
+##### The host you want to ping######
+:local HOST "192.168.89.1"
+##### Location of host########
+:local LOCATION "Central Office"
+##### Interface to Remote Network#######
+:local GW "bridge1"
+#### Ping Time out Increase or decrease as Required #####
+:local TIMEOUT "100ms"
+#### How Many try's ######
+:local COUNT "100000"
+### If less than 8 successful reply's Restart IPSec#####
+:local LESSTHAN "8"
+
+
+##################################DONT EDIT BELOW###################################
+#:log info "Looking for $HOST at $LOCATION"
+#:log info "Route to IPSec endpoint in $LOCATION is via $GW"
+:if ([/ping interface=$GW $HOST interval=$TIMEOUT count=$COUNT]<$LESSTHAN) \
+do={log error "$HOST at $LOCATION is unreachable Tunnel to $LOCATION is Down Forcing IPSec Restart"; /ip ipsec policy disable 1
+:delay 15;
+/ip ipsec policy enable 1} \
+else {:log warning "IPSec Tunnel to $LOCATION is OK Nothing to do"}
+}
